@@ -358,6 +358,29 @@ you should place your code here."
   (global-set-key (kbd "C-c l")         (quote thing-copy-line))
   (global-set-key (kbd "C-c s")         (quote thing-copy-symbol))
   (global-set-key (kbd "C-c [")         (quote thing-copy-parentheses))
+  (global-set-key (kbd "C-c r")         (quote replace-string))
+
+  ;; search at point
+  (defun xah-search-current-word ()
+    "Call `isearch' on current word or text selection."
+    (interactive)
+    (let ( -p1 -p2 )
+      (if (use-region-p)
+          (progn
+            (setq -p1 (region-beginning))
+            (setq -p2 (region-end)))
+        (save-excursion
+          (skip-chars-backward "-_A-Za-z0-9")
+          (setq -p1 (point))
+          (right-char)
+          (skip-chars-forward "-_A-Za-z0-9")
+          (setq -p2 (point))))
+      (setq mark-active nil)
+      (when (< -p1 (point))
+        (goto-char -p1))
+      (isearch-mode t)
+      (isearch-yank-string (buffer-substring-no-properties -p1 -p2))))
+  (global-set-key (kbd "C-c f") (quote xah-search-current-word))
 
   ;; web setting
   (setq-default
@@ -370,6 +393,8 @@ you should place your code here."
    js2-basic-offset 2
    js-indent-level 2
    ;; web-mode
+   javascript-indent-level 2
+   react-indent-level 2
    css-indent-offset 2
    web-mode-markup-indent-offset 2
    web-mode-css-indent-offset 2
@@ -380,6 +405,7 @@ you should place your code here."
     (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
 
+  (add-hook 'js2-mode-hook 'react-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
