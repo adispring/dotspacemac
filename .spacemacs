@@ -357,7 +357,7 @@ you should place your code here."
   (global-set-key (kbd "C-c w")         (quote thing-copy-word))
   (global-set-key (kbd "C-c l")         (quote thing-copy-line))
   (global-set-key (kbd "C-c s")         (quote thing-copy-symbol))
-  (global-set-key (kbd "C-c p")         (quote thing-paste-parentheses))
+  (global-set-key (kbd "C-c [")         (quote thing-copy-parentheses))
 
   ;; web setting
   (setq-default
