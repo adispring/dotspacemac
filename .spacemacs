@@ -31,32 +31,32 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     vimscript
-     yaml
-     markdown
-     vimscript
-     javascript
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
+     vimscript
+     yaml
+     markdown
+     vimscript
+     javascript
      helm
-     ;; auto-completion
      better-defaults
      emacs-lisp
      git
      markdown
-     ;; org
      shell
      (shell :variables
             shell-default-term-shell "/bin/zsh"
             shell-default-height 30
             shell-default-position 'bottom)
-     ;; spell-checking
      syntax-checking
+     ;; react
+     ;; org
+     ;; spell-checking
      ;; version-control
-     react
+     ;; auto-completion
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -382,30 +382,6 @@ you should place your code here."
       (isearch-yank-string (buffer-substring-no-properties -p1 -p2))))
   (global-set-key (kbd "C-c f") (quote xah-search-current-word))
 
-  ;; web setting
-  (setq-default
-   ;; js2-mode
-
-   ;; indent should not int user-init, otherwise this will be overwrited by other setting,
-   ;; not known which one until now
-   js2-strict-missing-semi-warning nil
-   js2-strict-trailing-comma-warning nil
-   js2-basic-offset 2
-   js-indent-level 2
-   ;; web-mode
-   javascript-indent-level 2
-   react-indent-level 2
-   css-indent-offset 2
-   web-mode-markup-indent-offset 2
-   web-mode-css-indent-offset 2
-   web-mode-code-indent-offset 2
-   web-mode-attr-indent-offset 2)
-  (with-eval-after-load 'web-mode
-    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
-    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
-    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
-
-  (add-hook 'js2-mode-hook 'react-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
