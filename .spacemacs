@@ -52,7 +52,7 @@ values."
             shell-default-height 30
             shell-default-position 'bottom)
      syntax-checking
-     ;; react
+     react
      ;; org
      ;; spell-checking
      ;; version-control
@@ -360,6 +360,10 @@ you should place your code here."
   (global-set-key (kbd "C-c [")         (quote thing-copy-parentheses))
   (global-set-key (kbd "C-c r")         (quote replace-string))
 
+  ;; switch to jsx-ide
+  (global-set-key (kbd "C-c x")         (quote js2-jsx-mode))
+  (global-set-key (kbd "C-c z")         (quote react-mode))
+
   ;; search at point
   (defun xah-search-current-word ()
     "Call `isearch' on current word or text selection."
@@ -381,6 +385,60 @@ you should place your code here."
       (isearch-mode t)
       (isearch-yank-string (buffer-substring-no-properties -p1 -p2))))
   (global-set-key (kbd "C-c f") (quote xah-search-current-word))
+  ;; web setting
+  (setq-default
+   ;; js2-mode
+
+   ;; indent should not int user-init, otherwise this will be overwrited by other setting,
+   ;; not known which one until now
+   js2-strict-missing-semi-warning nil
+   js2-strict-trailing-comma-warning nil
+   js2-basic-offset 2
+   js-indent-level 2
+   ;; web-mode
+   javascript-indent-level 2
+   react-indent-level 2
+   css-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
+   web-mode-code-indent-offset 2
+   web-mode-attr-indent-offset 2)
+  (with-eval-after-load 'web-mode
+    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
+
+  ;; (add-hook 'js2-mode-hook 'react-mode)
+
+  (defun copy-to-clipboard ()
+    "Copies selection to x-clipboard."
+    (interactive)
+    (if (display-graphic-p)
+        (progn
+          (message "Yanked region to x-clipboard!")
+          (call-interactively 'clipboard-kill-ring-save)
+          )
+      (if (region-active-p)
+          (progn
+            (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+            (message "Yanked region to clipboard!")
+            (deactivate-mark))
+        (message "No region active; can't yank to clipboard!")))
+    )
+
+  (defun paste-from-clipboard ()
+    "Pastes from x-clipboard."
+    (interactive)
+    (if (display-graphic-p)
+        (progn
+          (clipboard-yank)
+          (message "graphics active")
+          )
+      (insert (shell-command-to-string "pbpaste"))
+      )
+    )
+  (evil-leader/set-key "o y" 'copy-to-clipboard)
+  (evil-leader/set-key "o p" 'paste-from-clipboard)
 
   )
 
