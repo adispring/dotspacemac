@@ -448,6 +448,8 @@ you should place your code here."
   (evil-leader/set-key "o y" 'copy-to-clipboard)
   (evil-leader/set-key "o p" 'paste-from-clipboard)
 
+  (add-to-list 'company-dabbrev-code-modes 'web-mode)
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
