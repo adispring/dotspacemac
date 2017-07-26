@@ -378,9 +378,11 @@ you should place your code here."
   ;; This is your old M-x.
   (global-set-key (kbd "C-c C-x M-x") 'execute-extended-command)
 
-  ;;
+  ;; expand-region
   (global-set-key (kbd "M-m M-w") 'er/expand-region)
-  
+
+  (global-set-key (kbd "M-m M-g") 'find-file-at-point)
+
   ;; web setting
   (setq-default
    ;; js2-mode
