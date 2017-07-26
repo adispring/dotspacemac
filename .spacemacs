@@ -383,6 +383,12 @@ you should place your code here."
 
   (global-set-key (kbd "M-m M-g") 'find-file-at-point)
 
+  ;; multiple-cusors
+  (global-set-key (kbd "M-m M-l") 'mc/edit-lines)
+  (global-set-key (kbd "M-m M-n") 'mc/mark-next-like-this)
+  (global-set-key (kbd "M-m M-p") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "M-m M-a") 'mc/mark-all-like-this)
+
   ;; web setting
   (setq-default
    ;; js2-mode
