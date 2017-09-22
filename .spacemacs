@@ -345,8 +345,8 @@ you should place your code here."
 
   ;;============= adi's config =======================
 
-  ;; custome hotkey
-  (global-set-key (kbd "C-x C-j") #'dired-jump)
+  ;; fix tramp-method
+  (require 'tramp)
 
   ;; thing-edit load
   (push "~/.spacemacs.d" load-path)
@@ -379,6 +379,9 @@ you should place your code here."
   (global-set-key (kbd "M-m M-n") 'mc/mark-next-like-this)
   (global-set-key (kbd "M-m M-p") 'mc/mark-previous-like-this)
   (global-set-key (kbd "M-m M-a") 'mc/mark-all-like-this)
+
+  ;; custome hotkey
+  (global-set-key (kbd "C-x C-j") #'dired-jump)
 
   ;; web setting
   (add-to-list 'auto-mode-alist '("\\.erb\\'"    . web-mode))       ;; ERB
