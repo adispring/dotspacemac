@@ -37,13 +37,11 @@ values."
    dotspacemacs-configuration-layers
    '(
      haskell
-     typescript
+     ;; typescript
      racket
      python
-     vimscript
      yaml
      markdown
-     vimscript
      javascript
      helm
      better-defaults
@@ -68,7 +66,18 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(paredit smex yasnippet company nodejs-repl expand-region simple-httpd window-numbering company-ghci)
+   dotspacemacs-additional-packages
+   '(
+     paredit
+     smex
+     yasnippet
+     company
+     nodejs-repl
+     expand-region
+     simple-httpd
+     window-numbering
+     company-ghci
+     )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -333,39 +342,16 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  ;;============= My config =======================
-  ;; load thing-edit
+
+  ;;============= adi's config =======================
+
+  ;; custome hotkey
+  (global-set-key (kbd "C-x C-j") #'dired-jump)
+
+  ;; thing-edit load
   (push "~/.spacemacs.d" load-path)
   (require 'thing-edit)
   (require 'thing-edit-extension)
-
-  ;; switch input source between normal & edit mode in hybrid mode
-  (setq lang_source "com.apple.keylayout.US")
-  (add-hook 'evil-insert-state-entry-hook
-            (lambda ()
-              (shell-command (concat "issw " lang_source))))
-  (add-hook 'evil-insert-state-exit-hook
-            (lambda ()
-              (setq lang_source (shell-command-to-string "issw"))
-              (shell-command "issw com.apple.keylayout.US")))
-  (add-hook 'evil-replace-state-entry-hook
-            (lambda ()
-              (shell-command (concat "issw " lang_source))))
-  (add-hook 'evil-replace-state-exit-hook
-            (lambda ()
-              (setq lang_source (shell-command-to-string "issw"))
-              (shell-command "issw com.apple.keylayout.US")))
-
-  ;; Custome hotkey
-  (global-set-key (kbd "C-x C-j") #'dired-jump)
-
-  (define-key evil-insert-state-map (kbd "C-a") 'mwim-beginning-of-code-or-line)
-  (define-key evil-motion-state-map (kbd "C-a") 'mwim-beginning-of-code-or-line)
-  (define-key evil-insert-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
-  (define-key evil-motion-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
-  (define-key evil-insert-state-map (kbd "C-d") 'evil-delete-char)
-  (define-key evil-insert-state-map (kbd "C-n") 'next-line)      ;; was 'evil-complete-next
-  (define-key evil-insert-state-map (kbd "C-p") 'previous-line)  ;; was 'evil-complete-previous
 
   ;; thing-edit hotkey
   (global-set-key (kbd "C-c c")         (quote thing-copy-word))
@@ -395,28 +381,57 @@ you should place your code here."
   (global-set-key (kbd "M-m M-a") 'mc/mark-all-like-this)
 
   ;; web setting
-  (setq-default
-   ;; js2-mode
+  (add-to-list 'auto-mode-alist '("\\.erb\\'"    . web-mode))       ;; ERB
+  (add-to-list 'auto-mode-alist '("\\.html?\\'"  . web-mode))       ;; Plain HTML
+  (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))       ;; JS + JSX
+  (add-to-list 'auto-mode-alist '("\\.es6\\'"    . web-mode))       ;; ES6
+  (add-to-list 'auto-mode-alist '("\\.css\\'"    . web-mode))       ;; CSS
+  (add-to-list 'auto-mode-alist '("\\.scss\\'"   . web-mode))       ;; SCSS
+  (add-to-list 'auto-mode-alist '("\\.php\\'"   . web-mode))        ;; PHP
+  (add-to-list 'auto-mode-alist '("\\.blade\\.php\\'" . web-mode))  ;; Blade template
+  (setq web-mode-content-types-alist
+        '(("jsx" . "\\.js[x]?\\'")
+          ("javascript" . "\\.es6?\\'")))
 
-   ;; indent should not int user-init, otherwise this will be overwrited by other setting,
-   ;; not known which one until now
-   js2-strict-missing-semi-warning nil
-   js2-strict-trailing-comma-warning nil
-   js2-basic-offset 2
-   js-indent-level 2
-   ;; web-mode
-   javascript-indent-level 2
-   react-indent-level 2
-   css-indent-offset 2
-   web-mode-markup-indent-offset 2
-   web-mode-css-indent-offset 2
-   web-mode-code-indent-offset 2
-   web-mode-attr-indent-offset 2)
-  (with-eval-after-load 'web-mode
-    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
-    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
-    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
+  (setq web-mode-engines-alist
+        '(("blade"  . "\\.blade\\.")))
 
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+
+  (defadvice web-mode-highlight-part (around tweak-jsx activate)
+    (if (equal web-mode-content-type "jsx")
+        (let ((web-mode-enable-part-face nil))
+          ad-do-it)
+      ad-do-it))
+
+  (defadvice web-mode-highlight-part (around tweak-jsx activate)
+    (if (equal web-mode-content-type "js")
+        (let ((web-mode-enable-part-face nil))
+          ad-do-it)
+      ad-do-it))
+
+  (setq web-mode-enable-auto-pairing t)
+
+  (setq web-mode-enable-css-colorization t)
+
+  ;; disable jshint since we prefer eslint checking
+  (with-eval-after-load 'flycheck
+    (setq-default flycheck-disabled-checkers
+                  (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+  ;; use eslint with web-mode for jsx files
+  (flycheck-add-mode 'javascript-eslint 'web-mode))
+
+  (add-hook 'web-mode-hook
+            (lambda ()
+              (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-sexp)
+              (define-key js-mode-map (kbd "C-c C-r") 'nodejs-repl-send-region)
+              (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
+              (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
+
+  ;; copy & paste
   (defun copy-to-clipboard ()
     "Copies selection to x-clipboard."
     (interactive)
@@ -447,21 +462,7 @@ you should place your code here."
   (evil-leader/set-key "o y" 'copy-to-clipboard)
   (evil-leader/set-key "o p" 'paste-from-clipboard)
 
-  (add-to-list 'company-dabbrev-code-modes 'web-mode)
-  (add-to-list 'company-dabbrev-code-modes 'react-mode)
-  (add-to-list 'company-dabbrev-code-modes 'js2-mode)
-
-  (defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
-    "Workaround sgml-mode and follow airbnb component style."
-    (let* ((cur-line (buffer-substring-no-properties
-                      (line-beginning-position)
-                      (line-end-position))))
-      (if (string-match "^\\( +\\)\/?> *$" cur-line)
-          (let* ((empty-spaces (match-string 1 cur-line)))
-            (replace-regexp empty-spaces
-                            (make-string (- (length empty-spaces) sgml-basic-offset) 32)
-                            nil
-                            (line-beginning-position) (line-end-position))))))
+  ;; disable company default <return> behavior
   ;;; Prevent suggestions from being triggered automatically. In particular,
   ;;; this makes it so that:
   ;;; - TAB will always complete the current selection.
@@ -499,12 +500,6 @@ you should place your code here."
   (setq org-agenda-files (list "~/org/work.org"
                                "~/org/learn.org"))
 
-  (add-hook 'js-mode-hook
-            (lambda ()
-              (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-sexp)
-              (define-key js-mode-map (kbd "C-c C-r") 'nodejs-repl-send-region)
-              (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
-              (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
   (add-hook 'edit-server-done-hook (lambda () (shell-command "open -a \"Google Chrome\"")))
 
   )
@@ -547,7 +542,7 @@ This function is called at the very end of Spacemacs initialization."
  '(magit-diff-arguments (quote ("-- src")))
  '(package-selected-packages
    (quote
-    (symon string-inflection password-generator org-brain impatient-mode helm-purpose window-purpose imenu-list evil-org evil-lion editorconfig dante company-cabal company-anaconda tide typescript-mode racket-mode faceup window-numbering reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl nodejs-repl gmail-message-mode ham-mode html-to-markdown flymd edit-server intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode cmm-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic smex paredit rjsx-mode unfill mwim react-snippets yaml-mode mmm-mode markdown-toc markdown-mode gh-md web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data xterm-color shell-pop multi-term flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help helm-company helm-c-yasnippet fuzzy company-tern dash-functional tern company-statistics company auto-yasnippet ac-ispell auto-complete smeargle orgit magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit with-editor vimrc-mode dactyl-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (impatient-mode company-cabal company-anaconda tide typescript-mode racket-mode faceup window-numbering reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl nodejs-repl gmail-message-mode ham-mode html-to-markdown flymd edit-server intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode cmm-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic smex paredit rjsx-mode unfill mwim react-snippets yaml-mode mmm-mode markdown-toc markdown-mode gh-md web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data xterm-color shell-pop multi-term flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help helm-company helm-c-yasnippet fuzzy company-tern dash-functional tern company-statistics company auto-yasnippet ac-ispell auto-complete smeargle orgit magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit with-editor vimrc-mode dactyl-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
