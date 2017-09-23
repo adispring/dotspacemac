@@ -60,7 +60,7 @@ values."
      ;; spell-checking
      ;; version-control
      auto-completion
-     (haskell :variables haskell-completion-backend 'intero)
+     (haskell :variables haskell-completion-backend 'dante)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -77,6 +77,7 @@ values."
      simple-httpd
      window-numbering
      company-ghci
+     dante-mode
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
