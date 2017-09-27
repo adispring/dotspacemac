@@ -77,8 +77,9 @@ values."
      simple-httpd
      window-numbering
      company-ghci
-     dante-mode
-     ac-js2-mode
+     ;; dante-mode
+     ;; ac-js2-mode
+     dante
      tern
      tern-auto-complete
      )
