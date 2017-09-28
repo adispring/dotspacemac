@@ -333,7 +333,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
         '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
         ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
         ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
-  (add-hook 'after-init-hook 'global-company-mode)
+  ;; (add-hook 'after-init-hook 'global-company-mode)
   (setq-default
    ;; hoogle in emacs instead of browser
    haskell-hoogle-command t
@@ -513,6 +513,8 @@ you should place your code here."
 
   (add-hook 'edit-server-done-hook (lambda () (shell-command "open -a \"Google Chrome\"")))
 
+  ;; manualy add company-mode to haskell-mode
+  (add-hook 'company-mode-hook 'haskell-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
